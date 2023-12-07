@@ -1,0 +1,437 @@
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+  - docassemble.ALMassachusetts:al_massachusetts.yml
+---
+metadata:
+  title: >-
+    Petition for extreme risk protection order
+  short title: >-
+    Petition for ERPO
+  description: |-
+    This interview helps someone in Massachusetts file a Petition for an extreme risk protection order.
+  tags:
+    - "FA-07-00-00-00"
+    - "TO-01-00-00-00"
+  authors:
+    - Coleman Silver
+  original_form:
+    - https://courtforms.jud.state.ma.us/publicforms/TC0014
+  help_page_url: >-
+    https://www.mass.gov/info-details/eligibility-for-extreme-risk-protection-orders-erpo
+  help_page_title: >-
+    Eligibility for ERPO
+  allowed_courts: 
+    - "Boston Municipal Court"
+    - "District Court"
+  typical_role: "na"
+  al_weaver_version: "1.10.2"
+  generated_on: "2023-11-20"
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "MA"
+---
+code: |
+  github_repo_name =  'docassemble-PetitionForExtremeRiskProtectio'
+---
+code: |
+  interview_short_title = "File a Petition for extreme risk protection order fs1"
+---
+code: |
+  al_form_type = "other" 
+---
+objects:
+  - users: ALPeopleList.using(ask_number=True,target_number=1)
+---
+sections:
+  - review_petition_for_extreme_risk_protectio: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_petition_for_extreme_risk_protectio
+code: |
+  # Set the allowed courts for this interview
+  allowed_courts = ['Boston Municipal Court', 'District Court']
+  nav.set_section("review_petition_for_extreme_risk_protectio")
+  user_role = "na"
+  user_ask_role = "na"
+  petitioners.gather()
+  respondents1_name_full_and_address
+  renewal_petition
+  set_progress(16)
+  respondents_firearms
+  licensing_authority
+  pending_legal_action_description
+  set_progress(32)
+  respondents1_risk_reasons_block
+  courts[0].department
+  courts[0].division
+  set_progress(48)
+  signature_date
+  interview_order_petition_for_extreme_risk_protectio = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
+mandatory: True
+code: |
+  al_intro_screen
+  petition_for_extreme_risk_protectio_intro
+  interview_order_petition_for_extreme_risk_protectio
+  signature_date
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  petition_for_extreme_risk_protectio_download
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+id: Petition_for_extreme_risk_protection_order
+continue button field: petition_for_extreme_risk_protectio_intro
+question: |
+  Petition for extreme risk protection order
+subquestion: |
+  This interview will help you file a Petition for extreme risk protection order. 
+  
+  Before you get started, please gather:
+  
+  1. Names and addresses of Respondents (person against whom the order is sought);
+  2. The firearms (and ID card/license to carry, if applicable) or ammunition which the respondents have in their possession;
+  3.  A description of any pending legal action against the Respondent(s);
+  4. Reasons you believe the Respondent poses a risk of causing bodily injury to self or others by having firearms or ammunition.
+  
+  When you are finished, you will need to:
+  
+  1. Sign the document;
+  2. File with the court. 
+  
+  Most people take about 30-45 minutes to finish this interview.
+---
+id: Respondent Information
+question: |
+  Respondent Information
+subquestion: |
+  Enter the full name and address of the Respondent (person against whom the ERPO is sought).
+fields:
+  - "Respondent's full name and address.": respondents1_name_full_and_address
+    maxlength: 47
+---
+id: Renewal Petition 
+question: |
+  Renewal Petition
+fields:
+  - "Is this a renewal petition?": renewal_petition
+    datatype: yesno
+  - "Enter the date you filed the previous petition.": renewal_petition_description
+    datatype: date
+    required: false  
+---
+id: Firearms Description
+question: |
+  Firearms Description
+subquestion: |
+  Describe firearms, rifles, shotguns, machine guns, weapons, or ammunition which you believe the Respondent has a firearm ID card and/or license to carry and control, own or possesses.
+fields:
+  - "Describe the firearms of Respondent.": respondents_firearms
+    maxlength: 95
+  - "Describe the location of Respondent's firearms.": respondents_firearms_location
+    maxlength: 95
+---
+id: Your Relationship with the Respondent
+question: |
+  Your Relationship with the Respondent
+subquestion: |
+  Check all boxes which apply:
+fields:
+  - "Check this box if you are the licensing authority of the municipality where Respondent lives.": licensing_authority
+    datatype: yesno
+  - "Check this box if you are or have been engaged to the Respondent.": engaged_to_respondent
+    datatype: yesno
+  - "Check this box if you currently have or previously were related to Respondent by either blood or marriage.": blood_or_marriage_relation
+    datatype: yesno
+  - "Check this box if you are or were previously married to the Respondent.": married_to_respondent
+    datatype: yesno
+  - "Check this box if you are having or have had a child with Respondent.": child_with_respondent
+    datatype: yesno
+  - "Check this box if you are or have previously been dating the Respondent.": dating_with_respondent
+    datatype: yesno
+  - "Check this box if you are currently or have previously been residing with Respondent.": residing_with_respondent
+    datatype: yesno
+  - "Check this box if you believe that in Massachusetts, or another jurisdiction, there is an abuse prevention order against Respondent.": abuse_prevention_against_respondent
+    datatype: yesno
+  - "Check this box if you believe that in Massachusetts, or another jurisdiction, there is a harassment prevention order against Respondent.": harassment_against_respondent
+    datatype: yesno
+---
+id: Pending Legal Action
+question: |
+  Pending Legal Action
+fields:
+  - "If you believe you have a pending legal action against Respondent in Massachusetts or another jurisdiction, please briefly describe that action (case name and docket number).": pending_legal_action_description
+    maxlength: 39
+    required: false 
+  - "Check this box if you believe that in Massachusetts, or another jurisdiction, you have a pending legal action against Respondent.": pending_legal_action
+    datatype: yesno
+---
+id: Respondent Risk Description
+question: |
+  Respondent Risk Description
+fields:
+  - "Describe the reasons you believe that Respondent poses a risk of causing bodily injury to self or others by having control of firearms or ammunition. Provide as much detail as possible.": respondents1_risk_reasons_block
+    input type: area
+    maxlength: 475
+  - "Check this box if you need more space to continue describing the reason(s) which Respondent poses a risk of causing bodily injury to self or others.  Check this if you've already written more than two or three sentences.": additional_space_needed
+    datatype: yesno
+  - "Continue to provide a description of the reasons you believe that Respondent poses a risk of causing bodily injury to self or others if you previously ran out of space.": respondents2_risk_reasons_block
+    input type: area
+    maxlength: 2945
+    required: false
+---
+id: preview petition_for_extreme_risk_protectio
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.   
+  
+  ${ al_court_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Edit answers" button
+  to edit your answers.
+
+  ${ action_button_html(url_action('review_petition_for_extreme_risk_protectio'), label='Edit answers', color='info') }
+  
+  Remember to come back to this window to continue and sign your form.
+continue button field: petition_for_extreme_risk_protectio_preview_question    
+---
+code: |
+  signature_fields = ['petitioners[0].signature']
+---
+code: |
+  # This is a placeholder for the addresses that will be searched
+  # for matching address to court. Edit if court venue is based on 
+  # a different address than the user's
+  [user.address.address for user in users.complete_elements()]
+  addresses_to_search = [user.address for user in users.complete_elements()]
+---
+id: petition for extreme risk protectio review screen
+event: review_petition_for_extreme_risk_protectio
+question: |
+  Review your answers
+review:
+  - Edit: courts.revisit
+    button: |
+      **Courts**
+
+      % for item in courts:
+        * ${ item }
+      % endfor
+  - Edit: petitioners.revisit
+    button: |
+      **Petitioners**
+
+      % for item in petitioners:
+        * ${ item }
+      % endfor
+  - Edit: respondents1_name_full_and_address
+    button: |
+      **Respondent's full name and address.**:
+      ${ respondents1_name_full_and_address }
+  - Edit: renewal_petition
+    button: |
+      **Is this a renewal petition?**:
+      ${ word(yesno(renewal_petition)) }
+  - Edit: renewal_petition_description
+    button: |
+      **Enter the date you filed the previous petition.**:
+      ${ renewal_petition_description }
+  - Edit: respondents_firearms
+    button: |
+      **Describe the firearms of Respondent.**:
+      ${ respondents_firearms }
+  - Edit: respondents_firearms_location
+    button: |
+      **Describe the location of Respondent's firearms.**:
+      ${ respondents_firearms_location }
+  - Edit: licensing_authority
+    button: |
+      **Check this box if you are the licensing authority of the municipality where Respondent lives.**:
+      ${ word(yesno(licensing_authority)) }
+  - Edit: engaged_to_respondent
+    button: |
+      **Check this box if you are or have been engaged to the Respondent.**:
+      ${ word(yesno(engaged_to_respondent)) }
+  - Edit: blood_or_marriage_relation
+    button: |
+      **Check this box if you currently have or previously were related to Respondent by either blood or marriage.**:
+      ${ word(yesno(blood_or_marriage_relation)) }
+  - Edit: married_to_respondent
+    button: |
+      **Check this box if you are or were previously married to the Respondent.**:
+      ${ word(yesno(married_to_respondent)) }
+  - Edit: child_with_respondent
+    button: |
+      **Check this box if you are having or have had a child with Respondent.**:
+      ${ word(yesno(child_with_respondent)) }
+  - Edit: dating_with_respondent
+    button: |
+      **Check this box if you are or have previously been dating the Respondent.**:
+      ${ word(yesno(dating_with_respondent)) }
+  - Edit: residing_with_respondent
+    button: |
+      **Check this box if you are currently or have previously been residing with Respondent.**:
+      ${ word(yesno(residing_with_respondent)) }
+  - Edit: abuse_prevention_against_respondent
+    button: |
+      **Check this box if you believe that in Massachusetts, or another jurisdiction, there is an abuse prevention order against Respondent.**:
+      ${ word(yesno(abuse_prevention_against_respondent)) }
+  - Edit: harassment_against_respondent
+    button: |
+      **Check this box if you believe that in Massachusetts, or another jurisdiction, there is a harassment prevention order against Respondent.**:
+      ${ word(yesno(harassment_against_respondent)) }
+  - Edit: pending_legal_action_description
+    button: |
+      **If you believe you have a pending legal action against Respondent in Massachusetts or another jurisdiction, please briefly describe that action (case name and docket number).**:
+      ${ pending_legal_action_description }
+  - Edit: pending_legal_action
+    button: |
+      **Check this box if you believe that in Massachusetts, or another jurisdiction, you have a pending legal action against Respondent.**:
+      ${ word(yesno(pending_legal_action)) }
+  - Edit: respondents1_risk_reasons_block
+    button: |
+      **Describe the reasons you believe that Respondent poses a risk of causing bodily injury to self or others by having control of firearms or ammunition. Provide as much detail as possible.**:
+      > ${ single_paragraph(respondents1_risk_reasons_block) }
+  - Edit: additional_space_needed
+    button: |
+      **Check this box if you need more space to continue describing the reason(s) which Respondent poses a risk of causing bodily injury to self or others.**:
+      ${ word(yesno(additional_space_needed)) }
+  - Edit: signature_date
+    button: |
+      **Date of signature**:
+      ${ signature_date }
+  - Edit: respondents2_risk_reasons_block
+    button: |
+      **Continue to provide a description of the reasons you believe that Respondent poses a risk of causing bodily injury to self or others if you previously ran out of space.**:
+      > ${ single_paragraph(respondents2_risk_reasons_block) }
+---
+continue button field: courts.revisit
+question: |
+  Edit courts
+subquestion: |
+  ${ courts.table }
+
+  ${ courts.add_action() }
+---
+table: courts.table
+rows: courts
+columns:
+  - Department: |
+      row_item.department if defined("row_item.department") else ""
+  - Division: |
+      row_item.division if defined("row_item.division") else ""
+edit:
+  - department
+  - division
+confirm: True
+
+---
+continue button field: petitioners.revisit
+question: |
+  Edit petitioners
+subquestion: |
+  ${ petitioners.table }
+
+  ${ petitioners.add_action() }
+---
+table: petitioners.table
+rows: petitioners
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Signature: |
+      row_item.signature if defined("row_item.signature") else ""
+edit:
+  - name.first
+  - signature
+confirm: True
+
+---
+id: download petition_for_extreme_risk_protectio
+event: petition_for_extreme_risk_protectio_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_petition_for_extreme_risk_protectio'), label='Edit answers', color='info') }
+  
+  
+  ${ al_user_bundle.download_list_html() }
+  
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
+
+progress: 100
+---
+# ALDocument objects specify the metadata for each template
+objects:
+  - petition_for_extreme_risk_protectio_attachment: ALDocument.using(title="Petition for extreme risk protection order", filename="petition_for_extreme_risk_protectio", enabled=True, has_addendum=False, )
+---
+# Bundles group the ALDocuments into separate downloads, such as for court and for the user
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[petition_for_extreme_risk_protectio_attachment], filename="petition_for_extreme_risk_protectio", title="All forms to download for your records", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[petition_for_extreme_risk_protectio_attachment],  filename="petition_for_extreme_risk_protectio", title="All forms to deliver to court", enabled=True)
+---
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
+# used for "preview" and "final" keys, and logic in the template checks the value of 
+# `i` to show or hide the user's signature
+---
+attachment:
+  name: petition for extreme risk protectio
+  filename: petition_for_extreme_risk_protectio
+  variable name: petition_for_extreme_risk_protectio_attachment[i]
+  skip undefined: True
+  pdf template file: petition_for_extreme_risk_protectio.pdf
+  fields:
+      - "court_department": ${ courts[0].department }
+      - "court_division": ${ courts[0].division }
+      - "petitioners_name_full": ${ petitioners[0] }
+      - "respondents1_name_full_and_address": ${ respondents1_name_full_and_address }
+      - "renewal_petition": ${ renewal_petition }
+      - "renewal_petition_description": ${ renewal_petition_description.format() }
+      - "respondents_firearms__1": ${ respondents_firearms }
+      - "respondents_firearms__2": ${ respondents_firearms }
+      - "respondents_firearms__3": ${ respondents_firearms }
+      - "respondents_firearms_location__1": ${ respondents_firearms_location }
+      - "respondents_firearms_location__2": ${ respondents_firearms_location }
+      - "licensing_authority": ${ licensing_authority }
+      - "engaged_to_respondent": ${ engaged_to_respondent }
+      - "blood_or_marriage_relation": ${ blood_or_marriage_relation }
+      - "married_to_respondent": ${ married_to_respondent }
+      - "child_with_respondent": ${ child_with_respondent }
+      - "dating_with_respondent": ${ dating_with_respondent }
+      - "residing_with_respondent": ${ residing_with_respondent }
+      - "abuse_prevention_against_respondent": ${ abuse_prevention_against_respondent }
+      - "harassment_against_respondent": ${ harassment_against_respondent }
+      - "pending_legal_action_description": ${ pending_legal_action_description }
+      - "pending_legal_action": ${ pending_legal_action }
+      - "respondents1_risk_reasons_block": ${ respondents1_risk_reasons_block }
+      - "additional_space_needed": ${ additional_space_needed }
+      - "signature_date": ${ signature_date }
+      - "petitioners_signature": ${ petitioners[0].signature }
+      - "respondents2_risk_reasons_block": ${ respondents2_risk_reasons_block }
+
+
+
